@@ -1,157 +1,160 @@
+<?php
+
+$name = "";
+$name_error = "";
+
+$email = "";
+$email_error = "";
+
+$dob = "";
+$dob_error = "";
+
+$gender = "";
+$gender_error = "";
+
+$degree = "";
+$degree_error = "";
+
+$bloodgrp = "";
+$bloodgrp_error = "";
+
+if (isset($_POST["submit"])) {
+   
+    if(empty($_POST['name'])) {
+        $name_error = "*Name can not be empty";
+    } else if(strlen($_POST['name']) < 2) {
+        $name_error = "*Name must be greater than 2 character";
+    } else if(preg_match("/^[a-zA-Z-' ]/", $_POST['name']) != 1) {
+        $name_error = "*Only letters and white space allowed";
+    } else {
+        $name = test_input($_POST['name']);
+    }
+
+   
+    if(empty($_POST["email"])) {
+        $email_error = "*Email can not be empty";
+    } else if(!filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) {
+        $email_error = "*Enter Valid email";
+    } else {
+        $email = test_input($_POST['email']);
+    }
+
+   
+    if(empty($_POST['dob'])) {
+        $dob_error = "*Enter Date of birth";
+    } else if (preg_match("/^\d{4}-\d{2}-\d{2}$/", $_POST['dob']) != 1) {
+        $dob_error = "*Enter valid Date";
+    } else {
+        $dob = test_input($_POST['dob']);
+    }
+
+
+    if(empty($_POST['gender'])) {
+        $gender_error = "*Select Gender ";
+    } else {
+        $gender = test_input($_POST['gender']);
+    }
+
+    
+    if(!isset($_POST['degree'])) {
+        $degree_error = "*Enter Degree ";
+    } else if(count($_POST['degree']) < 2) {
+        $degree_error = "*At least 2 option is required";
+    } else {
+        $degree = $_POST['degree'];
+    }
+
+    // Blood Group
+    if(empty($_POST['bloodgrp'])) {
+        $bloodgrp_error = "*Enter your Blood group ";
+    } else {
+        $bloodgrp = $_POST['bloodgrp'];
+    
+    }
+}
+function test_input($str) {
+    return htmlspecialchars(trim($str));
+}
+
+?>
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<title></title>
-	<style type="text/css">
-		.err{
-			color: red;
-		}
-	</style>
+    <title>Form Validation </title>
+
+    <style type="text/css">
+        .error {
+            color: red;
+        }
+    </style>
 </head>
-<body>
 
-	<?php
+    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+        <fieldset>
+            <legend>
+                <label for="name">Name</label>
+            </legend>
+            <input type="text" name="name" id="name" value="<?php echo $name; ?>">
+            <span class="error"><?php echo $name_error; ?></span>
+        </fieldset>
 
-	$nameErr = $emailErr = $genderErr = $dobErr = $degreeErr = $bloodgroupErr ="";
-	$name = $email = $gender = $dob = $degree = $bloodgroup= "";
+        <fieldset>
+            <legend>
+                <label for="email">Email</label>
+            </legend>
+            <input type="text" name="email" id="email" value="<?php echo $email; ?>">
+            <span class="error"><?php echo $email_error ?></span>
+        </fieldset>
 
-	if ($_SERVER["REQUEST_METHOD"] == "POST") {
-	  if (empty($_POST["name"])) {
-	    $nameErr = "Name is required";
-	  } else if(strlen($_POST['name'])<2) {
-        $nameErr = "  Name must be contained 2 character";
-      }else {
-	    $name = test_input($_POST["name"]);
-	    if (!preg_match("/^[a-zA-Z-' ]*$/",$name)) {
-	      $nameErr = "Only letters and white space allowed";
-	    }
-	  }
+        <fieldset>
+            <legend>
+                <label for="dob">Date Of Birth</label>
+            </legend>
+            <input type="date" name="dob" id="dob" value="<?php echo $dob; ?>">
+            <span class="error"><?php echo $dob_error ?></span>
+        </fieldset>
 
-	  if (empty($_POST["email"])) {
-	    $emailErr = "Email is required";
-	  } else {
-	    $email = test_input($_POST["email"]);
-	    
-	    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-	      $emailErr = "Invalid email format";
-	    }
-	  }
-	  if (empty($_POST["degree"])) {
-	    $degreeErr = "Degree is required";
-	  } else {
-	    $degree = test_input($_POST["degree"]);
-	  }
+        <fieldset>
+            <legend>
+                <label for="gender">Gender</label>
+            </legend>
+            <input type="radio" name="gender" value="male" id="male"<?php echo ($gender == "male") ? " checked": ""; ?>><label for="male">Male</label>
+            <input type="radio" name="gender" value="female" id="female"<?php echo ($gender == "female") ? " checked": ""; ?>><label for="female">Female</label>
+            <input type="radio" name="gender" value="other" id="other"<?php echo ($gender == "other") ? " checked": ""; ?>><label for="other">Other</label>
+            <span class="error"><?php echo $gender_error ?></span>
+        </fieldset>
 
-	  if (empty($_POST["dob"])) {
-	    $dobErr = "Dob is required";
-	  } else {
-	    $dob = test_input($_POST["dob"]);
-	  }
+        <fieldset>
+            <legend>
+            <label for="degree">Degree</label>
+            </legend>
+            <input type="checkbox" name="degree[]" value="ssc" id="ssc"<?php echo (is_array($degree) && count($degree) > 1 && in_array("ssc", $degree)) ? " checked": ""; ?>><label for="ssc">SSC</label>
+            <input type="checkbox" name="degree[]" value="hsc" id="hsc"<?php echo (is_array($degree) && count($degree) > 1 && in_array("hsc", $degree)) ? " checked": ""; ?>><label for="hsc">HSC</label>
+            <input type="checkbox" name="degree[]" value="bsc" id="bsc"<?php echo (is_array($degree) && count($degree) > 1 && in_array("bsc", $degree)) ? " checked": ""; ?>><label for="bsc">BSc</label>
+            <input type="checkbox" name="degree[]" value="msc" id="msc"<?php echo (is_array($degree) && count($degree) > 1 && in_array("msc", $degree)) ? " checked": ""; ?>><label for="msc">MSc</label>
+            <span class="error"><?php echo $degree_error ?></span>
+        </fieldset>
 
+        <fieldset>
+            <legend>
+                <label for="bloodgrp">Blood Group</label>
+            </legend>
+            <select name="bloodgrp" id="bloodgrp">
+                <option selected>Select group</option>
+                <option value="a+"<?php echo ($bloodgrp == "a+") ? " selected": ""; ?>>A+</option>
+                <option value="a-"<?php echo ($bloodgrp == "a-") ? " selected": ""; ?>>A-</option>
+                <option value="b+"<?php echo ($bloodgrp == "b+") ? " selected": ""; ?>>B+</option>
+                <option value="b-"<?php echo ($bloodgrp == "b-") ? " selected": ""; ?>>B-</option>
+                <option value="o+"<?php echo ($bloodgrp == "o+") ? " selected": ""; ?>>O+</option>
+                <option value="o-"<?php echo ($bloodgrp == "o-") ? " selected": ""; ?>>O-</option>
+                <option value="ab+"<?php echo ($bloodgrp == "ab+") ? " selected": ""; ?>>AB+</option>
+                <option value="ab-"<?php echo ($bloodgrp == "ab-") ? " selected": ""; ?>>AB-</option>
+            </select>
+            <span class="error"><?php echo $bloodgrp_error ?></span><br><br>
+            <input type="submit" name="submit" value="Submit">
+        </fieldset>
+    </form>
 
-	  	  
-	  if (empty($_POST["gender"])) {
-	    $genderErr = "Gender is required";
-	  } else {
-	    $gender = test_input($_POST["gender"]);
-	  }
-
-	  if (empty($_POST["bloodgroup"])) {
-	    $bloodgroupErr = "bloodgroup is required";
-	  } else {
-	    $bloodgroup = test_input($_POST["bloodgroup"]);
-	  }
-
-
-	}
-
-
-	function test_input($data) {
-	  $data = trim($data);
-	  $data = stripslashes($data);
-	  $data = htmlspecialchars($data);
-	  return $data;
-	}
-
-
-
-?>
-
-
-	 <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-	 	<fieldset>
-	 		<legend>
-	 			<label for="name">Name</label>
-	 		</legend>
-	 		<input type="text" name="name">
-	 	<span class="err">*
-	 		<?php echo $nameErr;?>
-	 	</span>	
-
-	 	</fieldset>
-
-	 	<fieldset>
-	 		<legend>
-	 			<label for="email">Email</label>
-	 		</legend>
-
-            <input type="text" name="email">
-		<span class="err">*
-	 		<?php echo $emailErr;?>
-	 	</span>
-	 	</fieldset>
-	 	
-         
-		<fieldset>
-      <legend>
-        <label for="degree">Degree</label>
-      </legend>
-      <input type="checkbox" name="degree" value="ssc" id="ssc"><label for="ssc">Ssc</label>
-      <input type="checkbox" name="degree" value="Hsc" id="Hsc"><label for="hsc"></label>
-      <input type="checkbox" name="degree" value="bsc" id="bsc"><label for="bsc">Bsc</label>
-      <input type="checkbox" name="degree" value="msc" id="msc"><label for="msc">Msc</label>
-      <span class="err">*
-      <?php echo $degreeErr;?></span>
-    </fieldset>
-
-    <fieldset>
-      <legend>
-        <label for="dob">Date of birth</label>
-      </legend>
-      <input type="date" name="dob" id="dob">
-      <span class="err">*
-      <?php echo $dobErr;?></span>
-    </fieldset>
-
-
-		<fieldset>
-      <legend>
-        <label for="gender">Gender</label>
-      </legend>
-      <input type="radio" name="gender" value="male" id="male"><label for="male">Male</label>
-      <input type="radio" name="gender" value="female" id="female"><label for="female">Female</label>
-      <input type="radio" name="gender" value="other" id="other"><label for="other">Other</label>
-      <span class="err">*
-      <?php echo $genderErr;?></span>
-    </fieldset>
-		  <fieldset>
-      <legend>
-        <label for="bloodgroup">Blood Group</label>
-      </legend>
-      <select name="bloodgroup" id="bloodgroup">
-        <option selected></option>
-        <option value="a+">A+</option>
-        <option value="b+">B+</option>
-        <option value="a-">A-</option>
-        <option value="b-">B-</option>
-        <span class="err">*
-      <?php echo $bloodgroupErr;?></span>
-      </select>
-    </fieldset>
-	 	<input type="submit" value="Submit">
-	 </form>
-
-	 
 </body>
+
 </html>
